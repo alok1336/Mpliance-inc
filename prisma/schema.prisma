@@ -1,0 +1,295 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  DEALER
+  HOSPITAL
+  DOCTOR
+  GUEST
+}
+
+enum DealerTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum ServiceType {
+  REPAIR
+  AMC
+  AERB
+  SPARE_PART
+  LABOUR
+}
+
+enum ServiceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum FraudStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  REJECTED
+}
+
+model User {
+  id            String   @id @default(cuid())
+
+  name          String
+  email         String   @unique
+  password      String
+
+  phone         String?
+  role          Role     @default(GUEST)
+
+  isActive      Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  dealerProfile DealerProfile?
+
+  cartItems       CartItem[]
+  serviceRequests ServiceRequest[]
+  blogPosts       BlogPost[]
+  fraudReports    FraudReport[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model DealerProfile {
+  id                  String     @id @default(cuid())
+
+  userId              String     @unique
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyName         String
+  gstNumber           String?
+
+  tier                DealerTier @default(BRONZE)
+
+  subscriptionExpiry  DateTime?
+
+  discountPercentage  Float      @default(0)
+
+  creditLimit         Float      @default(0)
+
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([tier])
+}
+
+model Category {
+  id          String      @id @default(cuid())
+
+  name        String
+  slug        String      @unique
+
+  icon        String?
+
+  parentId    String?
+  parent      Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
+
+  children    Category[]  @relation("CategoryHierarchy")
+
+  products    Product[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([slug])
+  @@index([parentId])
+}
+
+model Product {
+  id            String    @id @default(cuid())
+
+  name          String
+
+  slug          String    @unique
+
+  sku           String    @unique
+
+  description   String    @db.Text
+
+  price         Float
+
+  dealerPrice   Float
+
+  stock         Int       @default(0)
+
+  isFeatured    Boolean   @default(false)
+  isPopular     Boolean   @default(false)
+  isVerified    Boolean   @default(true)
+
+  images        Json?
+
+  categoryId    String
+
+  category      Category  @relation(fields: [categoryId], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  cartItems     CartItem[]
+
+  @@index([slug])
+  @@index([sku])
+  @@index([categoryId])
+  @@index([isFeatured])
+  @@index([isPopular])
+}
+
+model CartItem {
+  id          String    @id @default(cuid())
+
+  userId      String
+  productId   String
+
+  quantity    Int       @default(1)
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, productId])
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model ServiceRequest {
+  id              String         @id @default(cuid())
+
+  userId          String
+
+  type            ServiceType
+
+  status          ServiceStatus  @default(PENDING)
+
+  hospitalName    String?
+  equipmentName   String?
+
+  description     String         @db.Text
+
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+}
+
+model Testimonial {
+  id            String    @id @default(cuid())
+
+  author        String
+
+  role          String
+
+  hospital      String?
+
+  rating        Int
+
+  content       String    @db.Text
+
+  isApproved    Boolean   @default(false)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([isApproved])
+}
+
+model BlogPost {
+  id            String    @id @default(cuid())
+
+  title         String
+
+  slug          String    @unique
+
+  content       String    @db.Text
+
+  coverImage    String?
+
+  authorId      String
+
+  author        User      @relation(fields: [authorId], references: [id])
+
+  publishedAt   DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([authorId])
+  @@index([publishedAt])
+}
+
+model NewsletterSubscriber {
+  id            String    @id @default(cuid())
+
+  email         String    @unique
+
+  subscribedAt  DateTime  @default(now())
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model FraudReport {
+  id            String       @id @default(cuid())
+
+  reportedById  String?
+
+  description   String       @db.Text
+
+  status        FraudStatus  @default(PENDING)
+
+  reportedBy    User?        @relation(fields: [reportedById], references: [id])
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reportedById])
+  @@index([status])
+}
+model QuoteRequest {
+  id            String   @id @default(cuid())
+
+  productName   String
+
+  name          String
+  email         String
+  phone         String
+
+  message       String?  @db.Text
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([productName])
+}
+
