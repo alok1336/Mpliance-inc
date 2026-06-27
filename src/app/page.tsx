@@ -8,36 +8,12 @@ import CallNowButton from "@/components/home/CallNowButton";
 import { prisma } from "@/lib/prisma";
 
 export default async function HomePage() {
-  let products = await prisma.product.findMany({
-    where: {
-      isFeatured: true,
-    },
-
-    include: {
-      category: true,
-    },
-
-    orderBy: {
-      createdAt: "desc",
-    },
-
+  const products = await prisma.product.findMany({
     take: 6,
   });
 
-  // fallback if no featured products exist
-  if (products.length === 0) {
-    products = await prisma.product.findMany({
-      include: {
-        category: true,
-      },
-
-      orderBy: {
-        createdAt: "desc",
-      },
-
-      take: 6,
-    });
-  }
+  console.log("Products found:", products.length);
+  console.log(products);
 
   return (
     <>
@@ -45,9 +21,7 @@ export default async function HomePage() {
 
       <CategoryGrid />
 
-      <FeaturedProducts
-        products={products}
-      />
+      <FeaturedProducts products={products} />
 
       <ServicesSection />
 

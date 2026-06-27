@@ -1,6 +1,45 @@
 {
   "version": 3,
-  "middleware": {},
-  "functions": {},
-  "sortedMiddleware": []
+  "middleware": {
+    "/": {
+      "files": [
+        "server/edge/chunks/Downloads_mpliance-inc_20f05ac0._.js",
+        "server/edge/chunks/node_modules_@opentelemetry_api_build_esm_4557a825._.js",
+        "server/edge/chunks/02368_@auth_core_8902812e._.js",
+        "server/edge/chunks/02368_jose_dist_webapi_450894a8._.js",
+        "server/edge/chunks/02368_396854a8._.js",
+        "server/edge/chunks/[root-of-the-server]__f722c4c5._.js",
+        "server/edge/chunks/turbopack-Downloads_mpliance-inc_edge-wrapper_e501b514.js"
+      ],
+      "name": "middleware",
+      "page": "/",
+      "matchers": [
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/admin(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+          "originalSource": "/admin/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/dealer\\/dashboard(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+          "originalSource": "/dealer/dashboard/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/cart(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+          "originalSource": "/cart/:path*"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "development",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "wyLc7xbAoL3bmIxOgFPaOtegR+qNR66zyE+urgtphGg=",
+        "__NEXT_PREVIEW_MODE_ID": "ae8aff289faafb309b9e81ce700c3267",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "a9a867a8a74406d3569df2f5e1fa701f4cc09f33b0e6c3c54f47a7c64f9789b9",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "0dad839035895f31fb92fa77218285d11dda79ffdadd8353b85121890e15a690"
+      }
+    }
+  },
+  "sortedMiddleware": [
+    "/"
+  ],
+  "functions": {}
 }
